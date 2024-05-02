@@ -2,47 +2,23 @@ use crate::utils::{avg_compress, fill_cos, fill_sin, linedraw};
 use image::RgbImage;
 use std::f64;
 
-pub fn fourier(
-    from: u32,
-    delta_x: f64,
-    width: u32,
-    height: u32,
-    range: u32,
-    arr: Vec<f64>,
-    x_scale: f64,
-) {
-    let to = from + range;
+pub fn fourier(delta_x: f64, width: u32, height: u32, range: u32, arr: Vec<f64>, step: f64) {
     let mut points: Vec<[u32; 2]> = Vec::new();
     let mut old_x: u32 = 0;
     let mut old_y: u32 = 0;
 
-    for x in from..to {
-        let freq = (x + 1) as f64 * x_scale;
+    if width != (range as f64 / step).floor() as u32 {
+        println!("step * range != width");
+        return;
+    }
+    // Thing in loop runs once for every step.
+    let mut freq = step;
+    for i in 0..((range as f64 / step).floor() as i64) {
+        let x = ((i as f64 / (range as f64 / step)) * width as f64).floor() as u32;
+        // println!("x: {:?} | freq: {:?}", x, freq);
 
-        let real = fill_cos(freq as f64, range as u64)
-            .iter()
-            .map(|z| z * delta_x * arr[x as usize])
-            .collect::<Vec<f64>>();
-        let imag = fill_sin(freq as f64, range as u64)
-            .iter()
-            .map(|z| z * delta_x * arr[x as usize])
-            .collect::<Vec<f64>>();
-
-        let real_area = real.iter().fold(0.0, |a, &b| a + b);
-        let imag_area = imag.iter().fold(0.0, |a, &b| a + b);
-
-        let magnitude = f64::sqrt(real_area.powi(2) + imag_area.powi(2));
-
-        let y = ((magnitude) * f64::from(height)).floor() as u32;
-        points.push([x, y]);
-
-        let line = linedraw(old_x, old_y, x, y);
-        for point in line {
-            points.push([point[0].abs() as u32, point[1].abs() as u32]) // goofy hacks
-        }
-
-        old_x = x;
-        old_y = y;
+        // old_x = x;
+        freq += step;
     }
 
     let mut max = 0;
@@ -57,19 +33,18 @@ pub fn fourier(
     }
 
     for p in points.iter_mut() {
-        p[0] = p[0] - from;
         p[1] = height - p[1];
     }
 
     let mut imgbuf = RgbImage::new(width, height);
-    let mut temp_y_arr: Vec<f64> = Vec::new();
+    // let mut temp_y_arr: Vec<f64> = Vec::new();
 
-    for x in 0..width {}
-    let compressed = avg_compress(temp_y_arr, width as u64);
+    // // for x in 0..width {}
+    // let compressed = avg_compress(temp_y_arr, width as u64);
 
-    for x in 0..width {
-        points[x as usize][0] = compressed[x as usize].abs().floor() as u32;
-    }
+    // for x in 0..width {
+    //     points[x as usize][0] = compressed[x as usize].abs().floor() as u32;
+    // }
 
     for point in points {
         let x = point[0];

@@ -13,6 +13,7 @@ fn main() {
 
     // let len = arr.len() as u32;
 
-    fourier::fourier(0, 0.002, 10000, 2000, 200, arr.clone(), 0.02);
+    // In theory, width = range / step
+    fourier::fourier(0.002, 10000, 2000, 200, arr.clone(), 0.02);
     time::time(5000, 1000, arr.clone());
 }
