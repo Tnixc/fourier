@@ -82,3 +82,17 @@ pub fn normalize_with_x(arr: Vec<[u32; 2]>) -> Vec<[u32; 2]> {
 
     return normalized;
 }
+
+pub fn avg_compress(arr: Vec<f64>, target_len: u64) -> Vec<f64> {
+    let len = arr.len() as u64;
+    let mut compressed = Vec::new();
+    let step = len / target_len;
+    for i in 0..target_len {
+        let mut sum = 0.0;
+        for j in 0..step {
+            sum += arr[(i * step + j) as usize];
+        }
+        compressed.push(sum / step as f64);
+    }
+    return compressed;
+}

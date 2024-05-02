@@ -1,9 +1,16 @@
-use crate::utils::{fill_cos, fill_sin, linedraw, normalize, normalize_with_x};
+use crate::utils::{avg_compress, fill_cos, fill_sin, linedraw};
 use image::RgbImage;
 use std::f64;
 
-pub fn fourier(from: u32, delta_x: f64, height: u32, range: u32, arr: Vec<f64>, x_scale: f64) {
-    let width = range;
+pub fn fourier(
+    from: u32,
+    delta_x: f64,
+    width: u32,
+    height: u32,
+    range: u32,
+    arr: Vec<f64>,
+    x_scale: f64,
+) {
     let to = from + range;
     let mut points: Vec<[u32; 2]> = Vec::new();
     let mut old_x: u32 = 0;
@@ -38,7 +45,6 @@ pub fn fourier(from: u32, delta_x: f64, height: u32, range: u32, arr: Vec<f64>, 
         old_y = y;
     }
 
-    // let res = normalize_with_x(points);
     let mut max = 0;
     for point in points.iter() {
         if point[1] > max {
@@ -56,6 +62,15 @@ pub fn fourier(from: u32, delta_x: f64, height: u32, range: u32, arr: Vec<f64>, 
     }
 
     let mut imgbuf = RgbImage::new(width, height);
+    let mut temp_y_arr: Vec<f64> = Vec::new();
+
+    for x in 0..width {}
+    let compressed = avg_compress(temp_y_arr, width as u64);
+
+    for x in 0..width {
+        points[x as usize][0] = compressed[x as usize].abs().floor() as u32;
+    }
+
     for point in points {
         let x = point[0];
         let y = point[1];

@@ -5,14 +5,14 @@ mod utils;
 
 fn main() {
     let contents =
-        fs::read_to_string("data_notime.txt").expect("Something went wrong reading the file");
+        fs::read_to_string("EEG_O2_500.txt").expect("Something went wrong reading the file");
     let arr = contents
         .split("\n")
-        .map(|z| z.parse().expect(z))
+        .map(|z| z.split(";").collect::<Vec<&str>>()[1].parse().expect(z))
         .collect::<Vec<f64>>();
 
-    let len = arr.len() as u32;
+    // let len = arr.len() as u32;
 
-    // time::time(5000, 1000, len, arr);
-    fourier::fourier(0, 0.002, 2000, 10000, arr, 0.02)
+    fourier::fourier(0, 0.002, 10000, 2000, 200, arr.clone(), 0.02);
+    time::time(5000, 1000, arr.clone());
 }
