@@ -14,5 +14,5 @@ fn main() {
     let len = arr.len() as u32;
 
     // time::time(5000, 1000, len, arr);
-    fourier::fourier(0.002, 1000, 500, arr)
+    fourier::fourier(0, 0.002, 2000, 10000, arr, 0.02)
 }

@@ -62,3 +62,23 @@ pub fn linedraw(x1: u32, y1: u32, x2: u32, y2: u32) -> Vec<[i32; 2]> {
     }
     return points;
 }
+
+pub fn normalize_with_x(arr: Vec<[u32; 2]>) -> Vec<[u32; 2]> {
+    let mut max = u32::MAX;
+    let min = 0;
+
+    for i in arr.iter() {
+        if i[1] > max {
+            max = i[1]
+        }
+        // if i[1] < min {
+        //     min = i[1]
+        // }
+    }
+    let mut normalized = Vec::new();
+    for i in 0..arr.len() {
+        normalized.push([arr[i][0], (arr[i][1] - min) / (max - min)]);
+    }
+
+    return normalized;
+}
