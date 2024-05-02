@@ -1,4 +1,6 @@
 use std::fs;
+
+use utils::normalize;
 mod fourier;
 mod time;
 mod utils;
@@ -14,6 +16,7 @@ fn main() {
     // let len = arr.len() as u32;
 
     // In theory, width = range / step
-    fourier::fourier(0.002, 10000, 2000, 200, arr.clone(), 0.02);
-    time::time(5000, 1000, arr.clone());
+    let test = normalize(arr);
+    fourier::fourier(0.002, 10000, 2000, 200, test.clone(), 0.02);
+    time::time(5000, 1000, test.clone());
 }

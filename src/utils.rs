@@ -1,5 +1,4 @@
-pub fn fill_sin(hz: f64, len: u64) -> Vec<f64> {
-    let delta_x = 0.002; // 0.002 seconds, 500Hz
+pub fn fill_sin(hz: f64, len: u64, delta_x: f64) -> Vec<f64> {
     let mut cycle: Vec<f64> = Vec::new();
     let mut counta = f64::from(0);
     for _t in 0..len {
@@ -9,8 +8,7 @@ pub fn fill_sin(hz: f64, len: u64) -> Vec<f64> {
     return cycle;
 }
 
-pub fn fill_cos(hz: f64, len: u64) -> Vec<f64> {
-    let delta_x = 0.002; // 0.002 seconds, 500Hz
+pub fn fill_cos(hz: f64, len: u64, delta_x: f64) -> Vec<f64> {
     let mut cycle: Vec<f64> = Vec::new();
     let mut counta = f64::from(0);
     for _t in 0..len {

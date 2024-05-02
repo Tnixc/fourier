@@ -1,9 +1,12 @@
 use crate::utils::{avg_compress, fill_cos, fill_sin, linedraw};
+use f64::consts::TAU;
 use image::RgbImage;
 use std::f64;
 
 pub fn fourier(delta_x: f64, width: u32, height: u32, range: u32, arr: Vec<f64>, step: f64) {
+    println!("{:?}", fill_cos(TAU * 10.0, 1000, delta_x));
     let mut points: Vec<[u32; 2]> = Vec::new();
+
     let mut old_x: u32 = 0;
     let mut old_y: u32 = 0;
 
@@ -13,11 +16,29 @@ pub fn fourier(delta_x: f64, width: u32, height: u32, range: u32, arr: Vec<f64>,
     }
     // Thing in loop runs once for every step.
     let mut freq = step;
-    for i in 0..((range as f64 / step).floor() as i64) {
-        let x = ((i as f64 / (range as f64 / step)) * width as f64).floor() as u32;
-        // println!("x: {:?} | freq: {:?}", x, freq);
+    for i in 0..(width as i64) {
+        // let x = ((i as f64 / (range as f64 / step)) * width as f64).floor() as u32;
 
-        // old_x = x;
+        let real_integral = fill_cos(freq, arr.len() as u64, delta_x)
+            .into_iter()
+            .map(|z| z * delta_x)
+            .collect::<Vec<f64>>();
+        let imag_integral = fill_sin(freq, arr.len() as u64, delta_x)
+            .into_iter()
+            .map(|z| z * delta_x)
+            .collect::<Vec<f64>>();
+        let mut real_sum = 0.0;
+        let mut imag_sum = 0.0;
+
+        for t in 0..arr.len() {
+            real_sum += real_integral[t] * arr[t];
+            imag_sum += imag_integral[t] * arr[t];
+        }
+        // println!("re: {:?}, im: {:?}", real_sum, imag_sum);
+        let magnitude = (real_sum.powi(2) + imag_sum.powi(2)).sqrt();
+        println!("x: {:?} | freq: {:?} | pow: {:?}", x, freq, magnitude);
+        old_x = x;
+        points.push([x, magnitude.ceil() as u32]);
         freq += step;
     }
 
