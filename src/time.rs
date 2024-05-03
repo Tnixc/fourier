@@ -1,7 +1,8 @@
 use crate::utils::{avg_compress, linedraw, normalize};
 use image::RgbImage;
 
-pub fn time(width: u32, height: u32, arr: Vec<f64>) {
+pub fn time(width: u32, height: u32, signal: Vec<f64>) {
+    let arr = normalize(signal);
     let mut imgbuf = RgbImage::new(width, height);
 
     let compressed: Vec<f64> = avg_compress(arr, width as u64);

@@ -1,22 +1,23 @@
 use std::f64::consts::PI;
+
 pub fn fill_sin(hz: f64, len: u64, delta_x: f64) -> Vec<f64> {
     let mut cycle: Vec<f64> = Vec::new();
-    let mut counta = f64::from(0);
-    for _t in 0..len {
-        cycle.push(counta.sin());
-        counta = counta + delta_x * hz;
+
+    for t in 0..len {
+        cycle.push((t as f64 * (1.0 / hz)).sin());
     }
+
     return cycle;
 }
 
 pub fn fill_cos(hz: f64, len: u64, delta_x: f64) -> Vec<f64> {
     let mut cycle: Vec<f64> = Vec::new();
-    let mut counta = 0.0;
-    for _t in 0..len {
-        let this = counta * 2.0 * PI;
-        cycle.push(this.cos());
-        counta = counta + delta_x * hz;
+    let mut counta: f64 = 0.0;
+
+    for t in 0..len {
+        cycle.push((t as f64 * (1.0 / hz)).cos());
     }
+
     return cycle;
 }
 

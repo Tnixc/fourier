@@ -1,60 +1,64 @@
 use crate::utils::{fill_cos, fill_sin, linedraw};
 use image::RgbImage;
+use num::complex::{Complex, ComplexFloat};
 use std::f64;
 use std::f64::consts::PI;
 
-pub fn fourier(
-    delta_x: f64,
-    width: u32,
-    height: u32,
-    range: u32,
-    signal: Vec<f64>,
-    freq_step: f64,
-) {
+pub fn fourier(width: u32, height: u32, range: u32, signal: Vec<f64>, freq_step: f64) {
     let mut points: Vec<[u32; 2]> = Vec::new();
     let mut temp_points: Vec<[f64; 2]> = Vec::new();
-
-    let mut old_x: u32 = 0;
-    let mut old_y: u32 = 0;
-
     if width != (range as f64 / freq_step).floor() as u32 {
         println!("step * range != width");
         return;
     }
+
     // Thing in loop runs once for every frequency step.
-    let mut freq = 0.0;
     for i in 0..(width as i64) {
-        let x = i as u32;
-
-        let mut real_sum = 0.0;
-        let mut imag_sum = 0.0;
-
+        let mut sum = Complex::new(0.0, 0.0);
+        let freq = freq_step * i as f64;
         for n in 0..signal.len() {
-            let real_part = signal[n as usize] * (2.0 * PI * freq * n as f64).cos();
-            let imag_part = -signal[n as usize] * (2.0 * PI * freq * n as f64).sin();
-            real_sum += real_part * delta_x;
-            imag_sum += imag_part * delta_x;
+            sum += Complex::new(
+                signal[n] * (2.0 * PI * freq * n as f64).cos() * freq_step,
+                signal[n] * -(2.0 * PI * freq * n as f64).sin() * freq_step,
+            );
         }
-
-        let magnitude = (real_sum.powi(2) + imag_sum.powi(2)).sqrt();
-        println!("{:?} Hz, {:?}", freq, magnitude);
-        temp_points.push([x as f64, magnitude]);
-
-        // old_x = x;
-        // old_y = y;
-        freq += freq_step;
+        let abs = sum.abs();
+        temp_points.push([i as f64, abs]);
+        println!("{:?} Hz,{:?}", freq, abs)
     }
 
-    // let mut max = 0;
-    // for point in points.iter() {
-    //     if point[1] > max {
-    //         max = point[1];
-    //     }
-    // }
+    let mut max = f64::NEG_INFINITY;
+    let mut min = f64::INFINITY;
 
-    // for point in points.iter_mut() {
-    //     point[1] = (point[1] as f64 * 0.5).floor() as u32;
-    // }
+    for t in 0..temp_points.len() {
+        if temp_points[t][1] > max {
+            max = temp_points[t][1];
+        }
+        if temp_points[t][1] < min {
+            min = temp_points[t][1];
+        }
+    }
+
+    for t in 0..temp_points.len() {
+        temp_points[t][1] = (temp_points[t][1] - min) / (max - min) * height as f64;
+    }
+
+    let mut x_old = temp_points[0][0].floor() as u32;
+    let mut y_old = temp_points[0][1].floor() as u32;
+
+    for t in 1..temp_points.len() {
+        let x = temp_points[t][0].floor() as u32;
+        let y = temp_points[t][1].floor() as u32;
+        points.append(
+            &mut linedraw(x_old, y_old, x, y)
+                .iter()
+                .map(|z| [z[0].abs() as u32, z[1].abs() as u32])
+                .collect::<Vec<[u32; 2]>>(),
+        );
+
+        x_old = x;
+        y_old = y;
+    }
 
     for p in points.iter_mut() {
         p[1] = height - p[1];
