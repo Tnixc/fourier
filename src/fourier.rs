@@ -24,7 +24,7 @@ pub fn fourier(
     // Thing in loop runs once for every frequency step.
     let mut freq = 0.0;
     for i in 0..(width as i64) {
-        let img_x = ((i as f64 / (range as f64 / freq_step)) * width as f64).floor() as u32;
+        let x = i as u32;
 
         let mut real_sum = 0.0;
         let mut imag_sum = 0.0;
@@ -38,7 +38,7 @@ pub fn fourier(
 
         let magnitude = (real_sum.powi(2) + imag_sum.powi(2)).sqrt();
         println!("{:?} Hz, {:?}", freq, magnitude);
-        temp_points.push([img_x as f64, magnitude]);
+        temp_points.push([x as f64, magnitude]);
 
         // old_x = x;
         // old_y = y;
