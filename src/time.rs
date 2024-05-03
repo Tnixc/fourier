@@ -5,7 +5,8 @@ pub fn time(width: u32, height: u32, signal: Vec<f64>) {
     let arr = normalize(signal);
     let mut imgbuf = RgbImage::new(width, height);
 
-    let compressed: Vec<f64> = avg_compress(arr, width as u64);
+    // let compressed: Vec<f64> = avg_compress(arr, width as u64);
+    let compressed = arr;
 
     let mut old_x: u32 = 0;
     let mut old_y: u32 = 0;

@@ -1,3 +1,4 @@
+use crate::time::time;
 use crate::utils::{fill_cos, fill_sin, linedraw};
 use image::RgbImage;
 use num::complex::{Complex, ComplexFloat};
@@ -11,7 +12,7 @@ pub fn fourier(width: u32, height: u32, range: u32, signal: Vec<f64>, freq_step:
         println!("step * range != width");
         return;
     }
-
+    let mut test: Vec<f64> = Vec::new();
     // Thing in loop runs once for every frequency step.
     for i in 0..(width as i64) {
         let mut sum = Complex::new(0.0, 0.0);
@@ -22,10 +23,13 @@ pub fn fourier(width: u32, height: u32, range: u32, signal: Vec<f64>, freq_step:
                 signal[n] * -(2.0 * PI * freq * n as f64).sin() * freq_step,
             );
         }
-        let abs = sum.abs();
+        let abs = (sum.re().powi(2) + sum.im().powi(2)).sqrt();
         temp_points.push([i as f64, abs]);
+        test.push(abs);
         println!("{:?} Hz,{:?}", freq, abs)
     }
+
+    time(5000, 1000, test);
 
     let mut max = f64::NEG_INFINITY;
     let mut min = f64::INFINITY;
