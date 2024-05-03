@@ -1,57 +1,60 @@
-use crate::utils::{avg_compress, fill_cos, fill_sin, linedraw};
-use f64::consts::TAU;
+use crate::utils::{fill_cos, fill_sin, linedraw};
 use image::RgbImage;
 use std::f64;
+use std::f64::consts::PI;
 
-pub fn fourier(delta_x: f64, width: u32, height: u32, range: u32, arr: Vec<f64>, step: f64) {
-    println!("{:?}", fill_cos(TAU * 10.0, 1000, delta_x));
+pub fn fourier(
+    delta_x: f64,
+    width: u32,
+    height: u32,
+    range: u32,
+    signal: Vec<f64>,
+    freq_step: f64,
+) {
     let mut points: Vec<[u32; 2]> = Vec::new();
+    let mut temp_points: Vec<[f64; 2]> = Vec::new();
 
     let mut old_x: u32 = 0;
     let mut old_y: u32 = 0;
 
-    if width != (range as f64 / step).floor() as u32 {
+    if width != (range as f64 / freq_step).floor() as u32 {
         println!("step * range != width");
         return;
     }
-    // Thing in loop runs once for every step.
-    let mut freq = step;
+    // Thing in loop runs once for every frequency step.
+    let mut freq = 0.0;
     for i in 0..(width as i64) {
-        // let x = ((i as f64 / (range as f64 / step)) * width as f64).floor() as u32;
+        let img_x = ((i as f64 / (range as f64 / freq_step)) * width as f64).floor() as u32;
 
-        let real_integral = fill_cos(freq, arr.len() as u64, delta_x)
-            .into_iter()
-            .map(|z| z * delta_x)
-            .collect::<Vec<f64>>();
-        let imag_integral = fill_sin(freq, arr.len() as u64, delta_x)
-            .into_iter()
-            .map(|z| z * delta_x)
-            .collect::<Vec<f64>>();
         let mut real_sum = 0.0;
         let mut imag_sum = 0.0;
 
-        for t in 0..arr.len() {
-            real_sum += real_integral[t] * arr[t];
-            imag_sum += imag_integral[t] * arr[t];
+        for n in 0..signal.len() {
+            let real_part = signal[n as usize] * (2.0 * PI * freq * n as f64).cos();
+            let imag_part = -signal[n as usize] * (2.0 * PI * freq * n as f64).sin();
+            real_sum += real_part * delta_x;
+            imag_sum += imag_part * delta_x;
         }
-        // println!("re: {:?}, im: {:?}", real_sum, imag_sum);
+
         let magnitude = (real_sum.powi(2) + imag_sum.powi(2)).sqrt();
-        println!("x: {:?} | freq: {:?} | pow: {:?}", x, freq, magnitude);
-        old_x = x;
-        points.push([x, magnitude.ceil() as u32]);
-        freq += step;
+        println!("{:?} Hz, {:?}", freq, magnitude);
+        temp_points.push([img_x as f64, magnitude]);
+
+        // old_x = x;
+        // old_y = y;
+        freq += freq_step;
     }
 
-    let mut max = 0;
-    for point in points.iter() {
-        if point[1] > max {
-            max = point[1];
-        }
-    }
+    // let mut max = 0;
+    // for point in points.iter() {
+    //     if point[1] > max {
+    //         max = point[1];
+    //     }
+    // }
 
-    for point in points.iter_mut() {
-        point[1] = (point[1] as f64 * 0.5).floor() as u32;
-    }
+    // for point in points.iter_mut() {
+    //     point[1] = (point[1] as f64 * 0.5).floor() as u32;
+    // }
 
     for p in points.iter_mut() {
         p[1] = height - p[1];
@@ -70,6 +73,7 @@ pub fn fourier(delta_x: f64, width: u32, height: u32, range: u32, arr: Vec<f64>,
     for point in points {
         let x = point[0];
         let y = point[1];
+        println!("{:?}, {:?}", x, y);
         if x < width && y < height {
             let some = imgbuf.get_pixel_mut_checked(x, y);
             *some.unwrap() = image::Rgb([255, 255, 255]);

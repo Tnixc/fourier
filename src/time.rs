@@ -4,7 +4,7 @@ use image::RgbImage;
 pub fn time(width: u32, height: u32, arr: Vec<f64>) {
     let mut imgbuf = RgbImage::new(width, height);
 
-    let compressed: Vec<f64> = avg_compress(normalize(arr), width as u64);
+    let compressed: Vec<f64> = avg_compress(arr, width as u64);
 
     let mut old_x: u32 = 0;
     let mut old_y: u32 = 0;
@@ -25,6 +25,7 @@ pub fn time(width: u32, height: u32, arr: Vec<f64>) {
     for point in points {
         let x = point[0];
         let y = point[1];
+        // println!("{:?}, {:?}", x, y);
         if x < width as i32 && y < height as i32 {
             let some = imgbuf.get_pixel_mut_checked(x as u32, y as u32);
             *some.unwrap() = image::Rgb([255, 255, 255]);

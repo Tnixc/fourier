@@ -1,3 +1,4 @@
+use std::f64::consts::PI;
 pub fn fill_sin(hz: f64, len: u64, delta_x: f64) -> Vec<f64> {
     let mut cycle: Vec<f64> = Vec::new();
     let mut counta = f64::from(0);
@@ -10,9 +11,10 @@ pub fn fill_sin(hz: f64, len: u64, delta_x: f64) -> Vec<f64> {
 
 pub fn fill_cos(hz: f64, len: u64, delta_x: f64) -> Vec<f64> {
     let mut cycle: Vec<f64> = Vec::new();
-    let mut counta = f64::from(0);
+    let mut counta = 0.0;
     for _t in 0..len {
-        cycle.push(counta.cos());
+        let this = counta * 2.0 * PI;
+        cycle.push(this.cos());
         counta = counta + delta_x * hz;
     }
     return cycle;
@@ -86,7 +88,7 @@ pub fn avg_compress(arr: Vec<f64>, target_len: u64) -> Vec<f64> {
     let mut compressed = Vec::new();
     let step = len / target_len;
     for i in 0..target_len {
-        let mut sum = 0.0;
+        let mut sum: f64 = 0.0;
         for j in 0..step {
             sum += arr[(i * step + j) as usize];
         }
